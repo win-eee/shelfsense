@@ -13,6 +13,31 @@ ShelfSense is a lightweight,  inventory management web app built for kirana (Ind
 Built for **Tink-her-hack 4.0 2026**.
 
 ---
+## Problem Statement 
+Small Kirana store owners in India face several inventory challenges:
+
+| Challenge | Impact |
+|-----------|--------|
+| *Manual tracking* | Leads to errors and stockouts |
+| *No demand forecasting* | Orders based on gut feeling, not data |
+| *Language barrier* | Most inventory software is English-only |
+| Overstocking/Understocking* | Either blocked capital or lost sales |
+| No systematic reorder alerts* | Discover stock empty only when customer asks |
+|  *WhatsApp-based ordering* | Requires manually typing lists for suppliers |
+
+---
+## Solution Overview
+
+ShelfSense provides:
+
+| Feature | Description |
+|---------|-------------|
+| *Real-time Dashboard* | See all products with color-coded stock status (Red- Critical, Yellow-  Low, Green- Good) |
+| * Sales Tracking* | Record daily sales to build historical data |
+| * Demand Prediction* | Simple average-based forecasting to suggest order quantities |
+| *Smart Alerts* | Automatic identification of items needing restock |
+| *WhatsApp Integration* | One-click sharing of shopping list with suppliers |
+| *Multilingual UI* | English, Malayalam, and Hindi support |
 
 ## 🧰 Tech Stack
 
@@ -140,9 +165,42 @@ All code was reviewed, tested, and adjusted by the team.
 | Name | Role |
 |---|---|
 | Hanna Vin Varghese | Lead Developer |
-| Sreeyuktha Anil | Developer |
+| Sreeyuktha Anil | Product Designer |
 
 ---
+## 👥 Team Members & Contribution Summary
+
+### *Hanna Vin Varghese* — Lead Developer
+
+Hanna led the technical development as the core architect and coder of ShelfSense. She built the   infrastructure, including the Streamlit application framework and SQLite database integration. Hanna implemented the sales prediction algorithm that helps Kirana stores forecast demand based on historical sales data. Her focus was on writing clean, efficient, and maintainable code that would be reliable for everyday use by shopkeepers. She identified and analyzed the Razorpay problem statement.
+
+*Key Contributions:*
+- Core architecture and database design
+- Streamlit framework implementation
+- SQLite database integration
+- Sales prediction algorithm development
+-  Coding and functionality
+
+---
+
+### *Sreeyuktha Anil* — Product Designer
+
+Sreeyuktha shaped the product vision and user experience. She conducted local user research. She analyzed the Razorpay problem statement  and ensured our technical solution aligned with their "Simplify Commerce for India" vision. Sreeyuktha designed the navigation system that makes the app accessible to first-time and older users, creating the color-coded alert system that allows shopkeepers to assess stock at a glance. She also handled all project documentation, user testing, and feedback incorporation.
+
+*Key Contributions:*
+- User research and requirement gathering
+-  Navigation design
+- Color-coded alert system
+- Multilingual implementation
+- Documentation and user testing
+
+---
+
+### *Collaborative Approach*
+
+Together, we collaborated closely on problem-solving, feature ideation, and overall solution design. Our roles naturally complemented each other - while Hanna focused on *"making it work"* through robust code and technical implementation, Sreeyuktha focused on *"making it useful"* by deeply understanding user needs and designing intuitive experiences. We worked as a cohesive unit, with constant feedback loops between development and design, ensuring that every feature was both technically sound and genuinely helpful for shopkeepers.
+
+By combining our strengths, we created an inventory system that speaks the language of local shopkeepers and fits seamlessly into their daily workflow - no training required, just open and use.
 
 ## 📄 License
 
