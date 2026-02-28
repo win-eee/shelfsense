@@ -8,7 +8,7 @@
 
 ## 📖 Project Description
 
-ShelfSense is a lightweight,  inventory management web app built for kirana (Indian small grocery) store owners. It runs entirely in the browser via Streamlit and stores data locally using SQLite — no internet or cloud account required. Owners can record daily sales, get automated restock alerts, track perishable items by expiry date, and send shopping lists directly to suppliers over WhatsApp, all in their preferred language.
+ShelfSense is a lightweight,  inventory management web app built for kirana (Indian small grocery) store owners. It runs entirely in the browser via Streamlit and stores data locally using SQLite — no cloud account required. Owners can record daily sales, get automated restock alerts, track perishable items by expiry date, and send shopping lists directly to suppliers over WhatsApp, all in their preferred language.
 
 Built for **Tink-her-hack 4.0 2026**.
 
