@@ -18,7 +18,7 @@ Built for **Tink-her-hack 4.0 2026**.
 
 | Layer | Technology |
 |---|---|
-| Frontend | [Streamlit](https://streamlit.io) |
+| Frontend | [Streamlit](https://shelfsense-8sqpj3inkgsbuhyhtc8vqr.streamlit.app/) |
 | Database | SQLite (via Python `sqlite3`) |
 | Data processing | Pandas |
 | Language | Python 3.10+ |
