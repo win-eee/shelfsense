@@ -99,7 +99,13 @@ def init_db():
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS products
                  (id INTEGER PRIMARY KEY, name TEXT, category TEXT,
-                  current_stock REAL, unit TEXT, reorder_level REAL)''')
+                  current_stock REAL, unit TEXT, reorder_level REAL,
+                  expiry_date TEXT)''')
+    # Add expiry_date column if upgrading from older DB
+    try:
+        c.execute("ALTER TABLE products ADD COLUMN expiry_date TEXT")
+    except Exception:
+        pass
     c.execute('''CREATE TABLE IF NOT EXISTS sales
                  (id INTEGER PRIMARY KEY, product_id INTEGER,
                   quantity REAL, date TEXT)''')
@@ -191,11 +197,24 @@ def add_sale(product_id, quantity):
     conn.commit()
     conn.close()
 
-def add_product(name, category, stock, unit, reorder):
+def add_product(name, category, stock, unit, reorder, expiry_date=None):
     conn = get_conn()
     c = conn.cursor()
-    c.execute("INSERT INTO products (name,category,current_stock,unit,reorder_level) VALUES (?,?,?,?,?)",
-              (name, category, stock, unit, reorder))
+    c.execute("INSERT INTO products (name,category,current_stock,unit,reorder_level,expiry_date) VALUES (?,?,?,?,?,?)",
+              (name, category, stock, unit, reorder, expiry_date))
+    conn.commit()
+    conn.close()
+
+def get_perishable_items():
+    conn = get_conn()
+    df = pd.read_sql("SELECT * FROM products WHERE expiry_date IS NOT NULL AND expiry_date != ''", conn)
+    conn.close()
+    return df
+
+def update_expiry_date(product_id, expiry_date):
+    conn = get_conn()
+    c = conn.cursor()
+    c.execute("UPDATE products SET expiry_date=? WHERE id=?", (expiry_date, product_id))
     conn.commit()
     conn.close()
 
@@ -227,6 +246,8 @@ if 'restock_success' not in st.session_state:
     st.session_state.restock_success = None
 if 'delete_success' not in st.session_state:
     st.session_state.delete_success = None
+if 'expiry_success' not in st.session_state:
+    st.session_state.expiry_success = None
 
 # ─── LANGUAGE LABELS ─────────────────────────────────────────────────────────
 LABELS = {
@@ -280,6 +301,21 @@ LABELS = {
         "navy_label": "🔵 Navy = Current Stock",
         "gold_label": "🟡 Gold = Reorder Level",
         "all_products": "📋 All Products",
+        "perishables": "🥛 Perishables",
+        "perishables_title": "🥛 Perishable Items Tracker",
+        "perishables_sub": "Track items with expiry dates to reduce waste",
+        "expiry_date": "Expiry Date (optional)",
+        "expires_in": "Expires in",
+        "days": "days",
+        "expired": "EXPIRED",
+        "set_expiry": "Set / Update Expiry Date",
+        "update_expiry_btn": "Update Expiry ✅",
+        "no_perishables": "No perishable items tracked yet. Add expiry dates to products in the Products page.",
+        "expiry_updated": "Expiry date updated!",
+        "expiry_critical": "🔴 Expired or expiring TODAY",
+        "expiry_urgent": "🟠 Expiring within 3 days",
+        "expiry_warning": "🟡 Expiring within 7 days",
+        "expiry_ok": "🟢 Fresh",
     },
     "Malayalam": {
         "title": "ShelfSense",
@@ -331,6 +367,21 @@ LABELS = {
         "navy_label": "🔵 നേവി = നിലവിലെ സ്റ്റോക്ക്",
         "gold_label": "🟡 സ്വർണ്ണം = റീഓർഡർ ലെവൽ",
         "all_products": "📋 എല്ലാ ഉൽപ്പന്നങ്ങളും",
+        "perishables": "🥛 കേടാകുന്ന ഉൽപ്പന്നങ്ങൾ",
+        "perishables_title": "🥛 കേടാകുന്ന ഉൽപ്പന്നങ്ങൾ ട്രാക്കർ",
+        "perishables_sub": "കാലഹരണ തീയതിയുള്ള ഉൽപ്പന്നങ്ങൾ നിരീക്ഷിക്കുക",
+        "expiry_date": "കാലഹരണ തീയതി (ഐച്ഛിക)",
+        "expires_in": "കാലഹരണം",
+        "days": "ദിവസം",
+        "expired": "കാലഹരണം കഴിഞ്ഞു",
+        "set_expiry": "കാലഹരണ തീയതി സജ്ജമാക്കുക",
+        "update_expiry_btn": "അപ്ഡേറ്റ് ✅",
+        "no_perishables": "കേടാകുന്ന ഉൽപ്പന്നങ്ങൾ ഇല്ല. ഉൽപ്പന്ന പേജിൽ കാലഹരണ തീയതി ചേർക്കുക.",
+        "expiry_updated": "കാലഹരണ തീയതി അപ്ഡേറ്റ് ചെയ്തു!",
+        "expiry_critical": "🔴 കാലഹരണം കഴിഞ്ഞത് / ഇന്ന്",
+        "expiry_urgent": "🟠 3 ദിവസത്തിനുള്ളിൽ",
+        "expiry_warning": "🟡 7 ദിവസത്തിനുള്ളിൽ",
+        "expiry_ok": "🟢 പുതിയത്",
     },
     "Hindi": {
         "title": "ShelfSense",
@@ -382,6 +433,21 @@ LABELS = {
         "navy_label": "🔵 नेवी = वर्तमान स्टॉक",
         "gold_label": "🟡 सोना = रीऑर्डर स्तर",
         "all_products": "📋 सभी उत्पाद",
+        "perishables": "🥛 जल्दी खराब होने वाले",
+        "perishables_title": "🥛 जल्दी खराब होने वाले उत्पाद",
+        "perishables_sub": "एक्सपायरी तारीख वाले उत्पाद ट्रैक करें",
+        "expiry_date": "एक्सपायरी तारीख (वैकल्पिक)",
+        "expires_in": "एक्सपायरी",
+        "days": "दिन",
+        "expired": "एक्सपायर हो गया",
+        "set_expiry": "एक्सपायरी तारीख सेट करें",
+        "update_expiry_btn": "अपडेट करें ✅",
+        "no_perishables": "कोई नाशवान उत्पाद नहीं। उत्पाद पृष्ठ में एक्सपायरी तारीख जोड़ें।",
+        "expiry_updated": "एक्सपायरी तारीख अपडेट हो गई!",
+        "expiry_critical": "🔴 एक्सपायर / आज",
+        "expiry_urgent": "🟠 3 दिनों में एक्सपायर",
+        "expiry_warning": "🟡 7 दिनों में एक्सपायर",
+        "expiry_ok": "🟢 ताजा",
     },
 }
 
@@ -392,7 +458,7 @@ lang = st.sidebar.selectbox("lang", ["English", "Malayalam", "Hindi"],
 L = LABELS[lang]
 
 st.sidebar.markdown(f"**{L['navigate']}**")
-page = st.sidebar.radio("nav", [L['dashboard'], L['enter_sales'], L['products'], L['alerts']],
+page = st.sidebar.radio("nav", [L['dashboard'], L['enter_sales'], L['products'], L['alerts'], L['perishables']],
                         label_visibility="collapsed")
 
 products_df = get_products()
@@ -479,10 +545,33 @@ if page == L['dashboard']:
             else:
                 status = L['good'];          bg = "#F0FFF4"; border = "#88BDA3"
 
+            # Check expiry
+            expiry_badge = ""
+            if pd.notna(row.get('expiry_date')) and row.get('expiry_date'):
+                try:
+                    exp_date = datetime.strptime(str(row['expiry_date']), '%Y-%m-%d').date()
+                    days_to_exp = (exp_date - datetime.now().date()).days
+                    if days_to_exp < 0:
+                        expiry_badge = f' &nbsp;<span style="background:#FF4444;color:white;border-radius:4px;padding:2px 6px;font-size:12px;">⚠️ {L["expired"]}</span>'
+                        bg = "#FFE5E5"; border = "#FF4444"
+                    elif days_to_exp == 0:
+                        expiry_badge = f' &nbsp;<span style="background:#FF6B6B;color:white;border-radius:4px;padding:2px 6px;font-size:12px;">⚠️ Expires TODAY</span>'
+                        bg = "#FFE5E5"; border = "#FF4444"
+                    elif days_to_exp <= 3:
+                        expiry_badge = f' &nbsp;<span style="background:#E8640A;color:white;border-radius:4px;padding:2px 6px;font-size:12px;">🟠 {L["expires_in"]} {days_to_exp} {L["days"]}</span>'
+                        if border == "#88BDA3": bg = "#FFF3E0"; border = "#E8640A"
+                    elif days_to_exp <= 7:
+                        expiry_badge = f' &nbsp;<span style="background:#D4AF37;color:white;border-radius:4px;padding:2px 6px;font-size:12px;">🟡 {L["expires_in"]} {days_to_exp} {L["days"]}</span>'
+                        if border == "#88BDA3": bg = "#FFFBEA"; border = "#D4AF37"
+                    else:
+                        expiry_badge = f' &nbsp;<span style="background:#88BDA3;color:white;border-radius:4px;padding:2px 6px;font-size:12px;">🟢 {exp_date.strftime("%d %b")}</span>'
+                except Exception:
+                    pass
+
             st.markdown(f"""
             <div style="background:{bg}; border-left:5px solid {border};
                         border-radius:8px; padding:12px 16px; margin-bottom:10px;">
-                <b style="font-size:16px; color:#1A3B5D;">{row['name']}</b>
+                <b style="font-size:16px; color:#1A3B5D;">{row['name']}</b>{expiry_badge}
                 <span style="float:right; color:#1A3B5D;">{status}</span><br>
                 <span style="color:#1A3B5D;">
                 📦 {L['stock']}: <b>{row['current_stock']} {row['unit']}</b> &nbsp;|&nbsp;
@@ -566,6 +655,12 @@ elif page == L['products']:
         stock    = st.number_input(L['curr_stock'], min_value=0.0, step=1.0, key="add_stock")
         reorder  = st.number_input(L['reorder_lvl'], min_value=0.0, step=1.0, key="add_reorder")
 
+        is_perishable = st.checkbox("🥛 This is a perishable item (has expiry date)", key="add_perishable")
+        if is_perishable:
+            expiry = st.date_input(L['expiry_date'], min_value=datetime.now().date(), key="add_expiry")
+        else:
+            expiry = None
+
         st.markdown("""
         <style>
         /* Fix button text visibility */
@@ -591,8 +686,11 @@ elif page == L['products']:
             u = st.session_state.add_unit
             stk = st.session_state.add_stock
             reord = st.session_state.add_reorder
+            is_per = st.session_state.get("add_perishable", False)
+            exp = st.session_state.get("add_expiry", None)
+            expiry_str = exp.strftime('%Y-%m-%d') if is_per and exp else None
             if n:
-                add_product(n, cat, stk, u, reord)
+                add_product(n, cat, stk, u, reord, expiry_str)
                 st.session_state.add_success = ("ok", f"✅ {n} added successfully!")
             else:
                 st.session_state.add_success = ("error", L['enter_name'])
@@ -752,3 +850,148 @@ elif page == L['alerts']:
             Opens WhatsApp with restock list ready to send
         </p>
         """, unsafe_allow_html=True)
+
+# ─── PERISHABLES ─────────────────────────────────────────────────────────────
+elif page == L['perishables']:
+    import urllib.parse
+    st.title(L['perishables_title'])
+    st.caption(L['perishables_sub'])
+
+    today = datetime.now().date()
+    perishable_df = get_perishable_items()
+
+    # ── Set / Update Expiry Date section ──────────────────────────────────────
+    st.divider()
+    st.subheader(L['set_expiry'])
+    col_a, col_b = st.columns([2, 1])
+    with col_a:
+        prod_for_expiry = st.selectbox("Product", products_df['name'].tolist(), key="expiry_product")
+    with col_b:
+        new_expiry = st.date_input(L['expiry_date'], value=None, key="expiry_date_input")
+
+    def do_update_expiry():
+        prod = st.session_state.expiry_product
+        exp = st.session_state.expiry_date_input
+        pid = int(products_df[products_df['name'] == prod]['id'].values[0])
+        expiry_str = exp.strftime('%Y-%m-%d') if exp else None
+        update_expiry_date(pid, expiry_str)
+        st.session_state.expiry_success = ("ok", f"✅ {L['expiry_updated']}")
+
+    st.button(L['update_expiry_btn'], on_click=do_update_expiry, key="expiry_btn")
+
+    if st.session_state.expiry_success:
+        kind, msg = st.session_state.expiry_success
+        st.success(msg)
+        st.session_state.expiry_success = None
+        perishable_df = get_perishable_items()  # refresh
+
+    st.divider()
+
+    if perishable_df.empty:
+        st.info(L['no_perishables'])
+    else:
+        expired_list   = []
+        urgent_list    = []   # ≤ 3 days
+        warning_list   = []   # 4–7 days
+        fresh_list     = []   # > 7 days
+
+        for _, row in perishable_df.iterrows():
+            try:
+                exp_date = datetime.strptime(str(row['expiry_date']), '%Y-%m-%d').date()
+                days_left_exp = (exp_date - today).days
+            except Exception:
+                continue
+
+            entry = (row['name'], row['current_stock'], row['unit'], exp_date, days_left_exp)
+            if days_left_exp <= 0:
+                expired_list.append(entry)
+            elif days_left_exp <= 3:
+                urgent_list.append(entry)
+            elif days_left_exp <= 7:
+                warning_list.append(entry)
+            else:
+                fresh_list.append(entry)
+
+        # Summary metrics
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("🔴 Expired", len(expired_list))
+        c2.metric("🟠 Expiring ≤3 days", len(urgent_list))
+        c3.metric("🟡 Expiring ≤7 days", len(warning_list))
+        c4.metric("🟢 Fresh", len(fresh_list))
+
+        def render_expiry_card(name, stock, unit, exp_date, days_left_exp, bg, border, badge):
+            exp_str = exp_date.strftime('%d %b %Y')
+            st.markdown(f"""
+            <div style="background:{bg}; border-left:5px solid {border};
+                        border-radius:8px; padding:12px 16px; margin-bottom:10px;">
+                <b style="font-size:16px; color:#1A3B5D;">{name}</b>
+                <span style="float:right;">{badge}</span><br>
+                <span style="color:#1A3B5D;">
+                📦 Stock: <b>{stock} {unit}</b> &nbsp;|&nbsp;
+                📅 Expiry: <b>{exp_str}</b> &nbsp;|&nbsp;
+                ⏳ {'Expired' if days_left_exp < 0 else ('Today!' if days_left_exp == 0 else f'{days_left_exp} days left')}
+                </span>
+            </div>""", unsafe_allow_html=True)
+
+        if expired_list:
+            st.error(f"🔴 {len(expired_list)} item(s) have EXPIRED — remove from shelf immediately!")
+            for name, stock, unit, exp_date, days_left_exp in expired_list:
+                render_expiry_card(name, stock, unit, exp_date, days_left_exp,
+                                   "#FFE5E5", "#FF4444",
+                                   f'<span style="background:#FF4444;color:white;border-radius:4px;padding:2px 8px;">⚠️ EXPIRED</span>')
+
+        if urgent_list:
+            st.warning(f"🟠 {len(urgent_list)} item(s) expiring within 3 days!")
+            for name, stock, unit, exp_date, days_left_exp in urgent_list:
+                render_expiry_card(name, stock, unit, exp_date, days_left_exp,
+                                   "#FFF3E0", "#E8640A",
+                                   f'<span style="background:#E8640A;color:white;border-radius:4px;padding:2px 8px;">🟠 {days_left_exp}d left</span>')
+
+        if warning_list:
+            st.info(f"🟡 {len(warning_list)} item(s) expiring within 7 days")
+            for name, stock, unit, exp_date, days_left_exp in warning_list:
+                render_expiry_card(name, stock, unit, exp_date, days_left_exp,
+                                   "#FFFBEA", "#D4AF37",
+                                   f'<span style="background:#D4AF37;color:white;border-radius:4px;padding:2px 8px;">🟡 {days_left_exp}d left</span>')
+
+        if fresh_list:
+            st.success(f"🟢 {len(fresh_list)} item(s) are fresh")
+            for name, stock, unit, exp_date, days_left_exp in fresh_list:
+                render_expiry_card(name, stock, unit, exp_date, days_left_exp,
+                                   "#F0FFF4", "#88BDA3",
+                                   f'<span style="background:#88BDA3;color:white;border-radius:4px;padding:2px 8px;">🟢 {days_left_exp}d left</span>')
+
+        # WhatsApp alert for expiring items
+        urgent_wa = expired_list + urgent_list
+        if urgent_wa:
+            st.divider()
+            wa_text = "⚠️ *ShelfSense Perishable Alert*\n\n"
+            if expired_list:
+                wa_text += "*EXPIRED – Remove from shelf:*\n"
+                for n, s, u, exp, _ in expired_list:
+                    wa_text += f"• {n} ({s} {u}) — expired {exp.strftime('%d %b')}\n"
+                wa_text += "\n"
+            if urgent_list:
+                wa_text += "*Expiring within 3 days:*\n"
+                for n, s, u, exp, d in urgent_list:
+                    wa_text += f"• {n} ({s} {u}) — expires {exp.strftime('%d %b')} ({d}d)\n"
+            wa_text += "\n_Sent from ShelfSense 📦_"
+            encoded_wa = urllib.parse.quote(wa_text)
+            wa_url = f"https://wa.me/?text={encoded_wa}"
+            st.markdown(f"""
+            <div style="margin-top: 12px;">
+                <a href="{wa_url}" target="_blank" style="
+                    background-color: #25D366;
+                    color: white !important;
+                    padding: 12px 24px;
+                    border-radius: 10px;
+                    text-decoration: none;
+                    font-size: 16px;
+                    font-weight: 700;
+                    display: inline-block;
+                    box-shadow: 0 4px 12px rgba(37,211,102,0.4);">
+                    📱 Share Expiry Alert on WhatsApp
+                </a>
+            </div>
+            <p style="color:#888; font-size:12px; margin-top:8px;">Send to staff or remove expired items quickly</p>
+            """, unsafe_allow_html=True)
