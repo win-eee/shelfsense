@@ -2,7 +2,7 @@
 
 > Helping small kirana store owners track stock, predict demand, and never run out of essentials — in English, Malayalam, and Hindi.
 
-![ShelfSense Dashboard](https://drive.google.com/file/d/17YS8qTrIwobdHcHMeFxPZcgDR1jfpQPX/view?usp=sharing)
+[ShelfSense Dashboard](https://drive.google.com/file/d/17YS8qTrIwobdHcHMeFxPZcgDR1jfpQPX/view?usp=sharing)
 
 ---
 
@@ -68,7 +68,7 @@ ShelfSense provides:
 
 | Dashboard | Alerts | Perishables |
 |---|---|---|
-| ![Dashboard](https://drive.google.com/file/d/17YS8qTrIwobdHcHMeFxPZcgDR1jfpQPX/view?usp=sharing) | ![Alerts](https://drive.google.com/file/d/1MgmKZAM9k1D4cgZw8CWAPTawripIq6Wt/view?usp=sharing) | ![Perishables](https://drive.google.com/file/d/1x6eeGJRoQNouFFQzktk5vYGVP9Xe7bl-/view?usp=sharing) |
+| [Dashboard](https://drive.google.com/file/d/17YS8qTrIwobdHcHMeFxPZcgDR1jfpQPX/view?usp=sharing) | [Alerts](https://drive.google.com/file/d/1MgmKZAM9k1D4cgZw8CWAPTawripIq6Wt/view?usp=sharing) | [Perishables](https://drive.google.com/file/d/1x6eeGJRoQNouFFQzktk5vYGVP9Xe7bl-/view?usp=sharing) |
 
 ---
 
