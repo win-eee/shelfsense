@@ -49,7 +49,7 @@ Built for **Tink-her-hack 4.0 2026**.
 
 ## 🎬 Demo Video
 
-▶️ **[Watch the demo on YouTube](#)** *(add link here)*
+▶️ https://drive.google.com/file/d/12Zkhat1WJHaJZgeRfIHWeoklJrLfPcjb/view?usp=sharing
 
 ---
 
