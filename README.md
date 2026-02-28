@@ -2,7 +2,7 @@
 
 > Helping small kirana store owners track stock, predict demand, and never run out of essentials — in English, Malayalam, and Hindi.
 
-![ShelfSense Dashboard](docs/screenshots/dashboard.png)
+![ShelfSense Dashboard](https://drive.google.com/file/d/17YS8qTrIwobdHcHMeFxPZcgDR1jfpQPX/view?usp=sharing)
 
 ---
 
@@ -43,7 +43,7 @@ Built for **Tink-her-hack 4.0 2026**.
 
 | Dashboard | Alerts | Perishables |
 |---|---|---|
-| ![Dashboard](docs/screenshots/dashboard.png) | ![Alerts](docs/screenshots/alerts.png) | ![Perishables](docs/screenshots/perishables.png) |
+| ![Dashboard](https://drive.google.com/file/d/17YS8qTrIwobdHcHMeFxPZcgDR1jfpQPX/view?usp=sharing) | ![Alerts](https://drive.google.com/file/d/1MgmKZAM9k1D4cgZw8CWAPTawripIq6Wt/view?usp=sharing) | ![Perishables](https://drive.google.com/file/d/1x6eeGJRoQNouFFQzktk5vYGVP9Xe7bl-/view?usp=sharing) |
 
 ---
 
@@ -55,7 +55,7 @@ Built for **Tink-her-hack 4.0 2026**.
 
 ## 🏗️ Architecture
 
-![Architecture Diagram](docs/architecture.svg)
+![Architecture Diagram](https://drive.google.com/file/d/1J-T6r9g_qKcLNDXdgOZ_61iK2zjkR8F_/view?usp=sharing)
 
 The app follows a simple three-layer architecture:
 
