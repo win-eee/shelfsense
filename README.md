@@ -119,7 +119,7 @@ shelfsense/
 
 ## 🌐 Live Demo
 
-🔗 **[shelfsense.streamlit.app](#)** *(add link after deploying)*
+🔗 **[shelfsense.streamlit.app](#)** *(https://shelfsense-8sqpj3inkgsbuhyhtc8vqr.streamlit.app/)*
 
 ---
 
